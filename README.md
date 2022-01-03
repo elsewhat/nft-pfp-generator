@@ -5,8 +5,9 @@ This project is in progress.
 
 Current status:
 1. DONE: Generation of token images
-2. DONE: Weight/rarity for traits
-3. Next up: Optional trait groups
+2. DONE: Duplicate detection
+3. DONE: Weight/rarity for traits
+4. Next up: Optional trait groups
 
 
 ## How to use
