@@ -44,12 +44,22 @@ class Token:
         tokenImage = tokenImage.convert('RGB')
         tokenImage.save(os.path.join(rootDir,'{}.png'.format(self.tokenId)))
 
+    def __eq__(self, other):
+        return (
+            self.__class__ == other.__class__ and self.traits == other.traits
+    ) 
+
+    # Hash function is used for checking for duplicates. Therefore only consideres traits
+    def __hash__(self):
+        return hash(tuple(self.traits))       
+
 class NFTCollection:
 
     def __init__(self, name):
         self.name = name
         self.traitGroups = []
         self.tokens = []
+        self.tokenHashes = {}
         self.tokenCounter=1
 
     def initializeTraits(self, traitRootDir):
@@ -72,7 +82,13 @@ class NFTCollection:
             token = Token('{} #{}'.format(self.name, (i+self.tokenCounter)), (i+self.tokenCounter))
             for traitGroup in self.traitGroups:
                 token.addTrait(traitGroup.getRandomTrait())
-            self.tokens.append(token)
+
+            if hash(token) in self.tokenHashes:
+                print('Duplicate detected {}'.format(hash(token)))
+                continue
+            else:
+                self.tokens.append(token)
+                self.tokenHashes[hash(token)]= True
                 
     def generateImages(self,rootDir):
         for token in self.tokens:
@@ -85,7 +101,7 @@ class NFTCollection:
 def main():
     nftCollection = NFTCollection('Cubeheads')
     nftCollection.initializeTraits('traits/')
-    nftCollection.generateTokens(100)
+    nftCollection.generateTokens(200)
     nftCollection.generateImages('tokens')
 
 
