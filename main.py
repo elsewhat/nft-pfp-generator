@@ -1,4 +1,4 @@
-from PIL import Image 
+from PIL import Image
 from IPython.display import display 
 import random
 import os
@@ -15,10 +15,12 @@ class TraitGroup:
         self.groupName = groupName
         self.traits = []
         self.traitsWeights = []
+        self.totalWeight = 0
 
     def addTrait(self,trait):
         self.traits.append(trait)
         self.traitsWeights.append(trait.weight)
+        self.totalWeight += trait.weight
                 
 
 
@@ -27,21 +29,23 @@ def main():
 
     traitGroups = {}
 
-    for path, subdirs, files in os.walk('traits/'):
-        for traitGroupDir in subdirs:
-            print(traitGroupDir)
-            traitGroup = TraitGroup(traitGroupDir)
+    traitGroupDirectories = [(f.path,f.name) for f in os.scandir('traits/') if f.is_dir()]
 
-            for path2, subdirs2, traitFiles in os.walk(os.path.join('traits/',traitGroupDir)):
-                for traitFile in traitFiles:
-                    #print(os.path.join(path, traitFile))
-                    traitGroup.addTrait(Trait(traitFile,traitFile,1))
+    for (traitGroupDirPath,traitGroupDirName) in traitGroupDirectories:
+        print('Found trait group: {}'.format(traitGroupDirName))
+        traitGroup = TraitGroup(traitGroupDirPath)
 
-            traitGroups[traitGroupDir]= traitGroup
+        traitGroupFiles = [f.name for f in os.scandir(traitGroupDirPath) if f.is_dir() != True]
+
+        for traitFile in traitGroupFiles:
+            print('Adding trait from file {}'.format(traitFile))
+            traitGroup.addTrait(Trait(traitFile,traitFile,1))
+
+        traitGroups[traitGroupDirName]= traitGroup
 
 
-        #for name in files:
-            #print(os.path.join(path, name))
+    #for name in files:
+        #print(os.path.join(path, name))
 
 
 if __name__ == '__main__':
