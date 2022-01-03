@@ -73,7 +73,16 @@ class NFTCollection:
 
             for (traitFile,traitName) in traitGroupFiles:
                 print('Adding trait from file {}'.format(traitFile))
-                traitGroup.addTrait(Trait(traitName,traitFile,1))
+
+                #Let's parse weight based on filename
+                traitWeight = 1
+                traitNameComponents = traitName.split('_')
+                if len(traitNameComponents) >=2 and traitNameComponents[0].isdigit():
+                    traitWeight = int(traitNameComponents[0])
+                    traitName= '_'.join(traitNameComponents[1:])
+
+                traitGroup.addTrait(Trait(traitName,traitFile,traitWeight))
+                print('Added trait {} with weight {}'.format(traitName,traitWeight))
 
             self.traitGroups.append(traitGroup)
         
@@ -101,8 +110,9 @@ class NFTCollection:
 def main():
     nftCollection = NFTCollection('Cubeheads')
     nftCollection.initializeTraits('traits/')
-    nftCollection.generateTokens(200)
+    nftCollection.generateTokens(100)
     nftCollection.generateImages('tokens')
+
 
 
 if __name__ == '__main__':
